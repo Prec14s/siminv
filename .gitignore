@@ -1,0 +1,34 @@
+# Virtual Environment
+backend/venv/
+venv/
+ENV/
+env/
+
+# Node modules & build outputs
+frontend/node_modules/
+frontend/dist/
+node_modules/
+dist/
+
+# Environment variables & secrets
+.env
+backend/.env
+frontend/.env
+*.env.local
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+backend/app/__pycache__/
+backend/app/*/__pycache__/
+
+# Uploads & temporary media
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
