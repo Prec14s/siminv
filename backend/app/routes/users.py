@@ -55,8 +55,12 @@ def list_users():
 def create_user():
     data = get_json()
     uname, email = validate(data, creating=True)
-    u = User(name=data["name"].strip(), username=uname, email=email, role=data["role"],
-             division=(data.get("division") or "").strip() or None)
+    u = User()
+    u.name = data["name"].strip()
+    u.username = uname
+    u.email = email
+    u.role = data["role"]
+    u.division = (data.get("division") or "").strip() or None
     u.set_password(data["password"])
     db.session.add(u)
     db.session.flush()

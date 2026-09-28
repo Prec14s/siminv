@@ -26,7 +26,12 @@ def run_seed(demo=True):
 
     for name, uname, email, role, div in ACCOUNTS:
         if not User.query.filter_by(username=uname).first():
-            u = User(name=name, username=uname, email=email, role=role, division=div)
+            u = User()
+            u.name = name
+            u.username = uname
+            u.email = email
+            u.role = role
+            u.division = div
             u.set_password(DEFAULT_PASSWORD)
             db.session.add(u)
     db.session.flush()
