@@ -15,7 +15,16 @@ class TimestampMixin:
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
 
-class User(TimestampMixin, db.Model):
+class BaseModel(db.Model):
+    __abstract__ = True
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+
+
+class User(TimestampMixin, BaseModel):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -43,7 +52,7 @@ class User(TimestampMixin, db.Model):
         }
 
 
-class TokenBlocklist(db.Model):
+class TokenBlocklist(BaseModel):
     __tablename__ = "token_blocklist"
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(64), unique=True, nullable=False, index=True)
@@ -56,7 +65,7 @@ class MasterMixin(TimestampMixin):
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
 
-class Category(MasterMixin, db.Model):
+class Category(MasterMixin, BaseModel):
     __tablename__ = "categories"
     description = db.Column(db.Text)
 
@@ -64,7 +73,7 @@ class Category(MasterMixin, db.Model):
         return {"id": self.id, "name": self.name, "description": self.description, "is_active": self.is_active}
 
 
-class Location(MasterMixin, db.Model):
+class Location(MasterMixin, BaseModel):
     __tablename__ = "locations"
     description = db.Column(db.Text)
 
@@ -72,14 +81,14 @@ class Location(MasterMixin, db.Model):
         return {"id": self.id, "name": self.name, "description": self.description, "is_active": self.is_active}
 
 
-class Unit(MasterMixin, db.Model):
+class Unit(MasterMixin, BaseModel):
     __tablename__ = "units"
 
     def to_dict(self):
         return {"id": self.id, "name": self.name, "is_active": self.is_active}
 
 
-class Supplier(MasterMixin, db.Model):
+class Supplier(MasterMixin, BaseModel):
     __tablename__ = "suppliers"
     contact = db.Column(db.String(100))
     phone = db.Column(db.String(30))
@@ -90,7 +99,7 @@ class Supplier(MasterMixin, db.Model):
                 "address": self.address, "is_active": self.is_active}
 
 
-class Item(TimestampMixin, db.Model):
+class Item(TimestampMixin, BaseModel):
     __tablename__ = "items"
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(30), unique=True, nullable=False, index=True)
@@ -139,7 +148,7 @@ class Item(TimestampMixin, db.Model):
         return data
 
 
-class StockTransaction(TimestampMixin, db.Model):
+class StockTransaction(TimestampMixin, BaseModel):
     __tablename__ = "stock_transactions"
     id = db.Column(db.Integer, primary_key=True)
     trx_number = db.Column(db.String(30), unique=True, nullable=False, index=True)
@@ -173,7 +182,7 @@ class StockTransaction(TimestampMixin, db.Model):
         return data
 
 
-class StockTransactionItem(db.Model):
+class StockTransactionItem(BaseModel):
     __tablename__ = "stock_transaction_items"
     id = db.Column(db.Integer, primary_key=True)
     transaction_id = db.Column(db.Integer, db.ForeignKey("stock_transactions.id"), nullable=False)
@@ -195,7 +204,7 @@ class StockTransactionItem(db.Model):
         }
 
 
-class Request(TimestampMixin, db.Model):
+class Request(TimestampMixin, BaseModel):
     __tablename__ = "requests"
     id = db.Column(db.Integer, primary_key=True)
     request_number = db.Column(db.String(30), unique=True, nullable=False, index=True)
@@ -240,7 +249,7 @@ class Request(TimestampMixin, db.Model):
         return data
 
 
-class RequestItem(db.Model):
+class RequestItem(BaseModel):
     __tablename__ = "request_items"
     id = db.Column(db.Integer, primary_key=True)
     request_id = db.Column(db.Integer, db.ForeignKey("requests.id"), nullable=False)
@@ -263,7 +272,7 @@ class RequestItem(db.Model):
         }
 
 
-class Notification(db.Model):
+class Notification(BaseModel):
     __tablename__ = "notifications"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
@@ -278,7 +287,7 @@ class Notification(db.Model):
                 "is_read": self.is_read, "created_at": iso(self.created_at)}
 
 
-class ActivityLog(db.Model):
+class ActivityLog(BaseModel):
     __tablename__ = "activity_logs"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
@@ -299,7 +308,7 @@ class ActivityLog(db.Model):
                 "created_at": iso(self.created_at)}
 
 
-class Setting(db.Model):
+class Setting(BaseModel):
     __tablename__ = "settings"
     key = db.Column(db.String(50), primary_key=True)
     value = db.Column(db.Text)
